@@ -9,15 +9,13 @@ import {
     InputLabel,
     Select,
     MenuItem,
-    TextField,
     Button,
     Card,
     CardContent,
     CardMedia,
     Chip,
     CircularProgress,
-    Alert,
-    FormHelperText
+    Alert
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -144,7 +142,7 @@ const ReportsPage: React.FC = () => {
                 {/* Filtros */}
                 <Paper sx={{ p: 3, mb: 4, borderRadius: 2 }}>
                     <Grid container spacing={3} alignItems="flex-end">
-                        <Grid item xs={12} md={4}>
+                        <Grid xs={12} md={4}>
                             <FormControl fullWidth sx={{ width: '200px' }}>
                                 <InputLabel>Artista *</InputLabel>
                                 <Select
@@ -163,7 +161,7 @@ const ReportsPage: React.FC = () => {
                             </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} md={3}>
+                        <Grid xs={12} md={3}>
                             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
                                 <DatePicker
                                     label="Fecha inicio"
@@ -179,7 +177,7 @@ const ReportsPage: React.FC = () => {
                             </LocalizationProvider>
                         </Grid>
 
-                        <Grid item xs={12} md={3}>
+                        <Grid xs={12} md={3}>
                             <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
                                 <DatePicker
                                     label="Fecha fin"
@@ -195,7 +193,7 @@ const ReportsPage: React.FC = () => {
                             </LocalizationProvider>
                         </Grid>
 
-                        <Grid item xs={12} md={2}>
+                        <Grid xs={12} md={2}>
                             <Button
                                 fullWidth
                                 variant="contained"
@@ -218,7 +216,7 @@ const ReportsPage: React.FC = () => {
                 {/* Tarjetas de resumen */}
                 {reporte.length > 0 && (
                     <Grid container spacing={3} sx={{ mb: 4 }}>
-                        <Grid item xs={12} md={4}>
+                        <Grid xs={12} md={4}>
                             <Card sx={{ borderRadius: 2, bgcolor: '#303030', color: 'white' }}>
                                 <CardContent>
                                     <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -236,7 +234,7 @@ const ReportsPage: React.FC = () => {
                             </Card>
                         </Grid>
 
-                        <Grid item xs={12} md={4}>
+                        <Grid xs={12} md={4}>
                             <Card sx={{ borderRadius: 2, bgcolor: '#FF6B6B', color: 'white' }}>
                                 <CardContent>
                                     <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -254,7 +252,7 @@ const ReportsPage: React.FC = () => {
                             </Card>
                         </Grid>
 
-                        <Grid item xs={12} md={4}>
+                        <Grid xs={12} md={4}>
                             <Card sx={{ borderRadius: 2, bgcolor: '#4CAF50', color: 'white' }}>
                                 <CardContent>
                                     <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -295,7 +293,7 @@ const ReportsPage: React.FC = () => {
                 ) : (
                     <Grid container spacing={3}>
                         {reporte.map((producto) => (
-                            <Grid item xs={12} sm={6} md={4} lg={3} key={producto.id_producto}>
+                            <Grid xs={12} sm={6} md={4} lg={3} key={producto.id_producto}>
                                 <Card sx={{
                                     height: 380,
                                     display: 'flex',

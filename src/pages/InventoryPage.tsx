@@ -23,10 +23,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Grid,
-    Card,
-    CardContent,
-    LinearProgress
+    Grid
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
@@ -519,7 +516,7 @@ const InventoryPage: React.FC = () => {
 
                             <Grid container spacing={2} sx={{ mb: 4 }}>
                                 {selectedProducto.inventario.map((inv) => (
-                                    <Grid item xs={12} sm={6} key={inv.talla}>
+                                    <Grid xs={12} sm={6} key={inv.talla}>
                                         <TextField
                                             fullWidth
                                             label={`Stock ${inv.talla}`}
@@ -541,7 +538,7 @@ const InventoryPage: React.FC = () => {
 
                             <Grid container spacing={2}>
                                 {selectedProducto.inventario.map((inv) => (
-                                    <Grid item xs={12} sm={6} key={inv.talla}>
+                                    <Grid xs={12} sm={6} key={inv.talla}>
                                         <TextField
                                             fullWidth
                                             label={`Mínimo ${inv.talla}`}

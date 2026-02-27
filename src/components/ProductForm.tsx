@@ -279,7 +279,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         <Paper elevation={0} sx={{ p: 3, borderRadius: 2 }}>
           <Grid container spacing={2.5}>
             {/* Primera fila: Código QR y Nombre */}
-            <Grid item xs={12} sm={6}>
+            <Grid xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Código QR"
@@ -317,7 +317,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Nombre *"
@@ -334,7 +334,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
             </Grid>
 
             {/* Descripción */}
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <TextField
                 fullWidth
                 label="Descripción"
@@ -352,7 +352,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
             </Grid>
 
             {/* URL de imagen */}
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <TextField
                 fullWidth
                 label="URL de imagen"
@@ -369,7 +369,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
             </Grid>
 
             {/* Artista y Ganancia */}
-            <Grid item xs={12} sm={6}>
+            <Grid xs={12} sm={6}>
               <FormControl fullWidth size="medium">
                 <InputLabel>Artista *</InputLabel>
                 <Select
@@ -387,7 +387,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Ganancia del artista"
@@ -406,7 +406,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
             </Grid>
 
             {/* Categoría y Tipo de precio */}
-            <Grid item xs={12} sm={6}>
+            <Grid xs={12} sm={6}>
               <FormControl fullWidth size="medium">
                 <InputLabel>Categoría</InputLabel>
                 <Select
@@ -424,7 +424,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid xs={12} sm={6}>
               <FormControl fullWidth size="medium">
                 <InputLabel>Tipo de precio *</InputLabel>
                 <Select
@@ -445,12 +445,12 @@ const ProductForm: React.FC<ProductFormProps> = ({
             </Grid>
 
             {/* Separador visual antes de los precios */}
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <Divider sx={{ my: 1 }} />
             </Grid>
 
             {/* SECCIÓN DE PRECIOS - Siempre ocupa toda la fila */}
-            <Grid item xs={12}>
+            <Grid xs={12}>
               {/* Precio fijo */}
               {formData.tipo_precio === 'fijo' && (
                 <Box sx={{ width: '100%' }}>
@@ -483,7 +483,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                   </Typography>
                   <Grid container spacing={2}>
                     {tallas.map((talla) => (
-                      <Grid item xs={6} sm={4} md={4} key={talla}>
+                      <Grid xs={6} sm={4} md={4} key={talla}>
                         <TextField
                           fullWidth
                           label={`Talla ${talla}`}

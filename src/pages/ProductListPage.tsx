@@ -3,7 +3,6 @@ import {
     Container,
     Typography,
     Button,
-    Grid,
     Box,
     Alert,
     Snackbar,
@@ -250,7 +249,7 @@ const ProductListPage: React.FC = () => {
                                 <ProductCard
                                     product={product}
                                     onEdit={handleEdit}
-                                    onDelete={openConfirmDialog}
+                                    onDelete={(id) => openConfirmDialog(id, 'producto')}
                                     onViewDetails={handleViewDetails}
                                     artistaNombre={getArtistaNombre(product.id_artista)}
                                 />
