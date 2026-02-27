@@ -108,7 +108,6 @@ function procesarVentasPorMes(ventas: Venta[]): { mes: string; total: number; ca
         }
 
         const mesKey = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}`;
-        const mesNombre = fecha.toLocaleDateString('es-MX', { month: 'short', year: 'numeric' });
 
         if (!ventasPorMes[mesKey]) {
             ventasPorMes[mesKey] = { total: 0, cantidad: 0 };

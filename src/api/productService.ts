@@ -45,7 +45,6 @@ export const productService = {
             descripcion: payload.descripcion,
             imagen_url: payload.imagen_url,
             id_artista: payload.id_artista,
-            _artista: payload.id_artista,
             categoria: payload.categoria,
             tipo_precio: payload.tipo_precio,
             precio_fijo: payload.precio_fijo,

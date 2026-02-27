@@ -180,7 +180,7 @@ const ArtistListPage: React.FC = () => {
         ) : (
           <Grid container spacing={3}>
             {artists.map((artist) => (
-              <Grid item xs={12} sm={6} md={4} key={artist.id_artista}>
+              <Grid size={{xs:12, sm:6, md:4}} key={artist.id_artista}>
                 <ArtistCard
                   artist={artist}
                   onEdit={handleEdit}

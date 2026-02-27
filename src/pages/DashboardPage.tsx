@@ -85,7 +85,7 @@ const DashboardPage: React.FC = () => {
 
         {/* Fila 1: Tarjetas de resumen */}
         <Grid container spacing={3} mb={4}>
-          <Grid xs={12} md={3}>
+          <Grid size={{xs:12, md:3}}>
             <Card sx={{ height: '100%', borderRadius: 2 }}>
               <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -105,7 +105,7 @@ const DashboardPage: React.FC = () => {
             </Card>
           </Grid>
 
-          <Grid xs={12} md={3}>
+          <Grid size={{xs:12, md:3}}>
             <Card sx={{ height: '100%', borderRadius: 2 }}>
               <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -125,7 +125,7 @@ const DashboardPage: React.FC = () => {
             </Card>
           </Grid>
 
-          <Grid xs={12} md={3}>
+          <Grid size={{xs:12, md:3}}>
             <Card sx={{ height: '100%', borderRadius: 2 }}>
               <CardContent>
                 <Box>
@@ -147,7 +147,7 @@ const DashboardPage: React.FC = () => {
             </Card>
           </Grid>
 
-          <Grid xs={12} md={3}>
+          <Grid size={{xs:12, md:3}}>
             <Card sx={{ height: '100%', borderRadius: 2 }}>
               <CardContent>
                 <Box>
@@ -186,7 +186,7 @@ const DashboardPage: React.FC = () => {
 
         {/* Fila 2: Alertas de Stock y Top Productos */}
         <Grid container spacing={3}>
-          <Grid xs={12} md={6}>
+          <Grid size={{xs:12, md:6}}>
             <Paper sx={{ p: 3, borderRadius: 2, height: '100%', maxHeight: 500, overflow: 'auto' }}>
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Typography variant="h6" fontWeight="bold">
@@ -255,7 +255,7 @@ const DashboardPage: React.FC = () => {
             </Paper>
           </Grid>
 
-          <Grid xs={12} md={6}>
+          <Grid size={{xs:12, md:6}}>
             <Paper sx={{ p: 3, borderRadius: 2, height: '100%' }}>
               <Typography variant="h6" fontWeight="bold" gutterBottom>
                 Top 3 Productos más Vendidos

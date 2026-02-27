@@ -36,7 +36,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
       <DialogContent>
         <Grid container spacing={3}>
           {/* Imagen */}
-          <Grid xs={12} md={4}>
+          <Grid size={{xs:12, md:4}}>
             <Box
               sx={{
                 width: '100%',
@@ -62,7 +62,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
           </Grid>
 
           {/* Información básica */}
-          <Grid xs={12} md={8}>
+          <Grid size={{xs:12, md:8}}>
             <Typography variant="h5" gutterBottom fontWeight="bold">
               {product.nombre}
             </Typography>
@@ -78,25 +78,25 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
             </Typography>
 
             <Grid container spacing={2}>
-              <Grid xs={6}>
+              <Grid size={{xs:6}}>
                 <Typography variant="subtitle2" color="text.secondary">
                   Código QR
                 </Typography>
                 <Typography variant="body2">{product.codigo_qr || 'N/A'}</Typography>
               </Grid>
-              <Grid xs={6}>
+              <Grid size={{xs:6}}>
                 <Typography variant="subtitle2" color="text.secondary">
                   Artista
                 </Typography>
                 <Typography variant="body2">{artistaNombre || 'N/A'}</Typography>
               </Grid>
-              <Grid xs={6}>
+              <Grid size={{xs:6}}>
                 <Typography variant="subtitle2" color="text.secondary">
                   Ganancia
                 </Typography>
                 <Typography variant="body2">${product.ganancia_artista} MXN</Typography>
               </Grid>
-              <Grid xs={6}>
+              <Grid size={{xs:6}}>
                 <Typography variant="subtitle2" color="text.secondary">
                   Tipo de precio
                 </Typography>
@@ -109,7 +109,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
           </Grid>
 
           {/* Detalles de precio según tipo */}
-          <Grid xs={12}>
+          <Grid size={{xs:12}}>
             <Divider sx={{ my: 2 }} />
             <Typography variant="h6" gutterBottom>
               Detalles de precio
@@ -124,7 +124,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
             {product.tipo_precio === 'por_talla' && product.precios_talla && (
               <Grid container spacing={2}>
                 {Object.entries(product.precios_talla).map(([talla, precio]) => (
-                  <Grid xs={4} sm={2} key={talla}>
+                  <Grid size={{xs:4, sm:2}} key={talla}>
                     <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#f5f5f5', borderRadius: 1 }}>
                       <Typography variant="subtitle2">{talla}</Typography>
                       <Typography variant="body2">${precio}</Typography>
@@ -137,7 +137,7 @@ const ProductDetailsDialog: React.FC<ProductDetailsDialogProps> = ({
             {product.tipo_precio === 'por_cantidad' && product.precios_cantidad && (
               <Grid container spacing={2}>
                 {Object.entries(product.precios_cantidad).map(([cantidad, precio]) => (
-                  <Grid xs={6} sm={3} key={cantidad}>
+                  <Grid size={{xs:6, sm:3}} key={cantidad}>
                     <Box sx={{ textAlign: 'center', p: 1, bgcolor: '#f5f5f5', borderRadius: 1 }}>
                       <Typography variant="subtitle2">{cantidad} uds</Typography>
                       <Typography variant="body2">${precio}</Typography>

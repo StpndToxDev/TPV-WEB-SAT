@@ -188,7 +188,7 @@ const SalesPage: React.FC = () => {
         {/* Filtros */}
         <Paper sx={{ p: 3, mb: 4, borderRadius: 2 }}>
           <Grid container spacing={3} alignItems="flex-end">
-            <Grid xs={12} md={4}>
+            <Grid size={{xs:12, md:4}}>
               <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
                 <DatePicker
                   label="Fecha inicio"
@@ -204,7 +204,7 @@ const SalesPage: React.FC = () => {
               </LocalizationProvider>
             </Grid>
 
-            <Grid xs={12} md={4}>
+            <Grid size={{xs:12, md:4}}>
               <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
                 <DatePicker
                   label="Fecha fin"
@@ -220,7 +220,7 @@ const SalesPage: React.FC = () => {
               </LocalizationProvider>
             </Grid>
 
-            <Grid xs={12} md={4}>
+            <Grid size={{xs:12, md:4}}>
               <Button
                 fullWidth
                 variant="contained"
@@ -350,7 +350,7 @@ const SalesPage: React.FC = () => {
             <DialogContent sx={{ p: 3 }}>
               <Box mb={3}>
                 <Grid container spacing={2}>
-                  <Grid xs={6}>
+                  <Grid size={{xs:6}}>
                     <Typography variant="subtitle2" color="text.secondary">
                       ID Venta
                     </Typography>
@@ -358,7 +358,7 @@ const SalesPage: React.FC = () => {
                       {selectedVenta.id_venta}
                     </Typography>
                   </Grid>
-                  <Grid xs={6}>
+                  <Grid size={{xs:6}}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Fecha
                     </Typography>
@@ -366,7 +366,7 @@ const SalesPage: React.FC = () => {
                       {formatFecha(selectedVenta.fecha_hora)}
                     </Typography>
                   </Grid>
-                  <Grid xs={6}>
+                  <Grid size={{xs:6}}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Método de Pago
                     </Typography>
@@ -382,7 +382,7 @@ const SalesPage: React.FC = () => {
                       }}
                     />
                   </Grid>
-                  <Grid xs={6}>
+                  <Grid size={{xs:6}}>
                     <Typography variant="subtitle2" color="text.secondary">
                       Total
                     </Typography>
@@ -417,7 +417,7 @@ const SalesPage: React.FC = () => {
                         secondary={
                           <Box mt={1}>
                             <Grid container spacing={2}>
-                              <Grid item xs={4}>
+                              <Grid size={{xs:4}}>
                                 <Typography variant="caption" color="text.secondary">
                                   Cantidad
                                 </Typography>
@@ -425,7 +425,7 @@ const SalesPage: React.FC = () => {
                                   {producto.cantidad}
                                 </Typography>
                               </Grid>
-                              <Grid xs={4}>
+                              <Grid size={{xs:4}}>
                                 <Typography variant="caption" color="text.secondary">
                                   Precio Unit.
                                 </Typography>
@@ -433,7 +433,7 @@ const SalesPage: React.FC = () => {
                                   {formatMoneda(producto.precio_unitario)}
                                 </Typography>
                               </Grid>
-                              <Grid xs={4}>
+                              <Grid size={{xs:4}}>
                                 <Typography variant="caption" color="text.secondary">
                                   Subtotal
                                 </Typography>
