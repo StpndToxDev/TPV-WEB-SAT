@@ -1,7 +1,8 @@
-import apiClient from './axiosConfig';
-import type { ApiResponse } from '../types/Artist.types';
+// src/api/dashboardService.ts
+import { supabase } from './supabaseClient';
 import type { Producto } from '../types/Product.types';
 import type { Inventario } from '../types/Inventory.types';
+import type { Artist } from '../types/Artist.types';  // ← CAMBIADO: Artist en lugar de Artista
 import type { Venta, DashboardStats } from '../types/Dashboard.types';
 import { productService } from './productService';
 import { inventoryService } from './inventoryService';
@@ -48,39 +49,77 @@ export const dashboardService = {
     }
 };
 
-// Funciones auxiliares
+// Funciones auxiliares - AHORA USAN SUPABASE
 async function obtenerVentas(): Promise<Venta[]> {
     try {
-        console.log('🔍 Obteniendo ventas...');
-        const response = await apiClient.get<ApiResponse<Venta[]>>('/exec', {
-            params: { accion: 'listar_ventas' }
+        console.log('🔍 Obteniendo ventas desde Supabase...');
+        
+        // CORREGIDO: Ordenar por fecha_hora de ventas, no de ventas_detalle
+        const { data, error } = await supabase
+            .from('ventas_detalle')
+            .select(`
+                id_venta,
+                id_producto,
+                talla,
+                cantidad,
+                precio_unitario,
+                subtotal,
+                ventas (
+                    fecha_hora,
+                    metodo_pago,
+                    notas
+                )
+            `);
+
+        if (error) throw error;
+
+        if (!data) return [];
+
+        // Transformar al formato Venta esperado
+        const ventas: Venta[] = data.map(item => {
+            const ventaInfo = Array.isArray(item.ventas) ? item.ventas[0] : item.ventas;
+            
+            return {
+                id_venta: item.id_venta,
+                fecha_hora: ventaInfo?.fecha_hora || new Date().toISOString(),
+                id_producto: item.id_producto,
+                talla: item.talla,
+                cantidad: item.cantidad,
+                precio_unitario: item.precio_unitario,
+                subtotal: item.subtotal,
+                metodo_pago: ventaInfo?.metodo_pago || '',
+                notas: ventaInfo?.notas || ''
+            };
         });
-        console.log('✅ Respuesta ventas:', response.data);
-        if (response.data.success && response.data.data) {
-            return response.data.data;
-        }
-        return [];
+
+        // Ordenar después de obtener los datos
+        ventas.sort((a, b) => new Date(b.fecha_hora).getTime() - new Date(a.fecha_hora).getTime());
+
+        console.log('✅ Ventas obtenidas:', ventas.length);
+        return ventas;
     } catch (error) {
         console.error('❌ Error al obtener ventas:', error);
         return [];
     }
 }
 
-async function obtenerArtistas(): Promise<any[]> {
+async function obtenerArtistas(): Promise<Artist[]> {  // ← CAMBIADO: Artist
     try {
-        const response = await apiClient.get<ApiResponse<any[]>>('/exec', {
-            params: { accion: 'listar_artistas' }
-        });
-        if (response.data.success && response.data.data) {
-            return response.data.data;
-        }
-        return [];
+        const { data, error } = await supabase
+            .from('artistas')
+            .select('*')
+            .order('nombre');
+
+        if (error) throw error;
+
+        return data || [];
     } catch (error) {
         console.error('Error al obtener artistas:', error);
         return [];
     }
 }
 
+// Las funciones de procesamiento NO CAMBIAN
 function procesarVentasPorMes(ventas: Venta[]): { mes: string; total: number; cantidad: number }[] {
     // Primero, agrupar por id_venta para obtener ventas únicas
     const ventasUnicas: Record<string, Venta[]> = {};

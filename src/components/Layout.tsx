@@ -22,12 +22,12 @@ import ArtistsIcon from '@mui/icons-material/People';
 import ProductsIcon from '@mui/icons-material/Inventory';
 import InventoryIcon from '@mui/icons-material/Storage';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import SettingsIcon from '@mui/icons-material/Settings';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import icono from '../assets/icono.png';
 
 const drawerWidth = 280;
 
@@ -53,9 +53,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { text: 'Ventas', icon: <ReceiptIcon />, path: '/ventas' },
   ];
 
-  const bottomMenuItems = [
-    { text: 'Configuración', icon: <SettingsIcon />, path: '/configuracion' },
-  ];
+
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -73,16 +71,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const handleLogout = () => {
-    logout();  // ← LLAMAR A LA FUNCIÓN LOGOUT DEL CONTEXTO
+    logout();
     navigate('/login');
   };
 
   const drawer = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Logo y título */}
-      <Toolbar sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
+      <Toolbar sx={{
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: sidebarCollapsed ? 'center' : 'space-between',
         px: 2,
         bgcolor: '#303030',
@@ -90,18 +88,25 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       }}>
         {!sidebarCollapsed && (
           <Box display="flex" alignItems="center">
-            <Avatar 
-              sx={{ bgcolor: 'white', color: '#303030', mr: 1, width: 32, height: 32 }}
-            >
-              T
-            </Avatar>
+            <Avatar
+              src={icono}
+              alt="Logo"
+              sx={{
+                bgcolor: 'white',
+                color: '#303030',
+                mr: 1,
+                width: 32,
+                height: 32,
+                objectFit: 'contain' // Para que la imagen se ajuste bien
+              }}
+            />
             <Typography variant="h6" noWrap component="div">
-              TPV System
+              Gestión Ventas
             </Typography>
           </Box>
         )}
         {sidebarCollapsed && (
-          <Avatar 
+          <Avatar
             sx={{ bgcolor: 'white', color: '#303030', width: 40, height: 40 }}
           >
             T
@@ -170,8 +175,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 {item.icon}
               </ListItemIcon>
               {!sidebarCollapsed && (
-                <ListItemText 
-                  primary={item.text} 
+                <ListItemText
+                  primary={item.text}
                   primaryTypographyProps={{
                     fontWeight: location.pathname === item.path ? 600 : 400,
                   }}
@@ -186,36 +191,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Menú inferior */}
       <List sx={{ pb: 2 }}>
-        {bottomMenuItems.map((item) => (
-          <ListItem key={item.text} disablePadding sx={{ display: 'block', mb: 0.5 }}>
-            <ListItemButton
-              onClick={() => handleNavigation(item.path)}
-              sx={{
-                minHeight: 48,
-                justifyContent: sidebarCollapsed ? 'center' : 'initial',
-                px: 2.5,
-                mx: 1,
-                borderRadius: 2,
-                '&:hover': {
-                  bgcolor: 'rgba(48, 48, 48, 0.04)',
-                },
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: 0,
-                  mr: sidebarCollapsed ? 0 : 2,
-                  justifyContent: 'center',
-                  color: '#303030',
-                }}
-              >
-                {item.icon}
-              </ListItemIcon>
-              {!sidebarCollapsed && <ListItemText primary={item.text} />}
-            </ListItemButton>
-          </ListItem>
-        ))}
-        
         {/* Botón de Cerrar Sesión */}
         <ListItem disablePadding sx={{ display: 'block', mb: 0.5 }}>
           <ListItemButton
@@ -289,8 +264,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { 
-              boxSizing: 'border-box', 
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
               width: drawerWidth,
               bgcolor: '#f8f9fa'
             },
@@ -304,8 +279,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { 
-              boxSizing: 'border-box', 
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
               width: sidebarCollapsed ? 80 : drawerWidth,
               bgcolor: '#f8f9fa',
               borderRight: '1px solid rgba(0, 0, 0, 0.08)',
@@ -333,7 +308,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       >
         {/* Toolbar espaciador para móvil */}
         <Toolbar sx={{ display: { sm: 'none' } }} />
-        
+
         {/* Contenido de la página */}
         <Box sx={{ p: 3 }}>
           {children}
