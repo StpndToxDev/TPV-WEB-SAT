@@ -9,6 +9,7 @@ import ProductListPage from './pages/ProductListPage';
 import InventoryPage from './pages/InventoryPage';
 import ReportsPage from './pages/ReportsPage';
 import SalesPage from './pages/SalesPage';
+import QRTemplatesPage from './pages/QRTemplatesPage';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
                     <Route path="/reportes" element={<ReportsPage />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                     <Route path="/ventas" element={<SalesPage />} />
+                    <Route path="/qr-templates" element={<QRTemplatesPage />} />
                   </Routes>
                 </Layout>
               </ProtectedRoute>

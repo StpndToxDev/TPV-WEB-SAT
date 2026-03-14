@@ -28,6 +28,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import icono from '../assets/icono.png';
+import QrCodeIcon from '@mui/icons-material/QrCode';
 
 const drawerWidth = 280;
 
@@ -49,6 +50,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { text: 'Artistas', icon: <ArtistsIcon />, path: '/artistas' },
     { text: 'Productos', icon: <ProductsIcon />, path: '/productos' },
     { text: 'Inventario', icon: <InventoryIcon />, path: '/inventario' },
+    { text: 'Generar QR', icon: <QrCodeIcon />, path: '/qr-templates' },
     { text: 'Reportes', icon: <AssessmentIcon />, path: '/reportes' },
     { text: 'Ventas', icon: <ReceiptIcon />, path: '/ventas' },
   ];
