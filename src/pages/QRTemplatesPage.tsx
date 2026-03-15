@@ -19,7 +19,15 @@ import {
     Fade,
     Zoom,
     useTheme,
-    alpha
+    alpha,
+    IconButton,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Tooltip
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -28,15 +36,18 @@ import PrintIcon from '@mui/icons-material/Print';
 import SearchIcon from '@mui/icons-material/Search';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { QRCodeCanvas } from 'qrcode.react';
 import { qrService } from '../api/qrService';
-import type { QRProduct } from '../types/QR.types';
+import type { QRProduct, ProductoSeleccionado } from '../types/QR.types';
 import QRPrintDialog from '../components/QRPrintDialog';
 
 // Definir el color corporativo
 const CORPORATE_COLOR = '#303030';
 
-// Componentes estilizados con el color corporativo
+// Componentes estilizados
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(4),
     borderRadius: theme.spacing(2),
@@ -77,22 +88,6 @@ const StatsCard = styled(Card)(({ theme }) => ({
     }
 }));
 
-const QRPreviewBox = styled(Box)(({ theme }) => ({
-    width: 200,
-    height: 200,
-    backgroundColor: theme.palette.grey[100],
-    borderRadius: theme.spacing(2),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: `2px dashed ${CORPORATE_COLOR}`,
-    transition: 'all 0.3s ease',
-    '&:hover': {
-        borderColor: CORPORATE_COLOR,
-        backgroundColor: alpha(CORPORATE_COLOR, 0.04)
-    }
-}));
-
 // Tipo extendido para el producto que incluye group (solo para UI)
 interface ProductoConGrupo extends QRProduct {
     group: string;
@@ -102,8 +97,10 @@ const QRTemplatesPage: React.FC = () => {
     const theme = useTheme();
     const [productos, setProductos] = useState<QRProduct[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<ProductoConGrupo | null>(null);
-    const [cantidad, setCantidad] = useState<number>(24);
+    const [cantidadProducto, setCantidadProducto] = useState<number>(1);
+    const [productosSeleccionados, setProductosSeleccionados] = useState<ProductoSeleccionado[]>([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [printDialogOpen, setPrintDialogOpen] = useState(false);
 
@@ -125,26 +122,27 @@ const QRTemplatesPage: React.FC = () => {
         }
     };
 
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        await cargarProductos();
+        setRefreshing(false);
+    };
+
     const handleProductChange = (event: any, newValue: ProductoConGrupo | null) => {
         setSelectedProduct(newValue);
         setError(null);
     };
 
-    const handleCantidadChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleCantidadProductoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(event.target.value);
-        if (!isNaN(value) && value > 0 && value <= 1000) {
-            setCantidad(value);
+        if (!isNaN(value) && value > 0 && value <= 100) {
+            setCantidadProducto(value);
         }
     };
 
-    const handleGenerate = () => {
+    const handleAgregarProducto = () => {
         if (!selectedProduct) {
             setError('Selecciona un producto');
-            return;
-        }
-
-        if (cantidad < 1 || cantidad > 1000) {
-            setError('La cantidad debe ser entre 1 y 1000');
             return;
         }
 
@@ -153,11 +151,65 @@ const QRTemplatesPage: React.FC = () => {
             return;
         }
 
+        // Verificar si el producto ya está en la lista
+        const existe = productosSeleccionados.find(p => p.id_producto === selectedProduct.id_producto);
+        
+        if (existe) {
+            // Si existe, actualizar la cantidad
+            const nuevosProductos = productosSeleccionados.map(p => 
+                p.id_producto === selectedProduct.id_producto 
+                    ? { ...p, cantidad: p.cantidad + cantidadProducto }
+                    : p
+            );
+            setProductosSeleccionados(nuevosProductos);
+        } else {
+            // Si no existe, agregarlo
+            const nuevoProducto: ProductoSeleccionado = {
+                id_producto: selectedProduct.id_producto,
+                nombre: selectedProduct.nombre,
+                codigo_qr: selectedProduct.codigo_qr,
+                cantidad: cantidadProducto
+            };
+            setProductosSeleccionados([...productosSeleccionados, nuevoProducto]);
+        }
+
+        // Limpiar selección
+        setSelectedProduct(null);
+        setCantidadProducto(1);
+    };
+
+    const handleEliminarProducto = (idProducto: string) => {
+        setProductosSeleccionados(productosSeleccionados.filter(p => p.id_producto !== idProducto));
+    };
+
+    const handleActualizarCantidad = (idProducto: string, nuevaCantidad: number) => {
+        if (nuevaCantidad < 1) return;
+        
+        setProductosSeleccionados(
+            productosSeleccionados.map(p => 
+                p.id_producto === idProducto 
+                    ? { ...p, cantidad: nuevaCantidad }
+                    : p
+            )
+        );
+    };
+
+    const handleGenerate = () => {
+        if (productosSeleccionados.length === 0) {
+            setError('Agrega al menos un producto');
+            return;
+        }
+
         setPrintDialogOpen(true);
     };
 
+    const calcularTotalCodigos = () => {
+        return productosSeleccionados.reduce((total, p) => total + p.cantidad, 0);
+    };
+
     const calcularHojasNecesarias = () => {
-        return Math.ceil(cantidad / QRS_PER_PAGE);
+        const totalCodigos = calcularTotalCodigos();
+        return Math.ceil(totalCodigos / QRS_PER_PAGE);
     };
 
     const productosConQR = productos.filter(p => p.codigo_qr);
@@ -181,35 +233,53 @@ const QRTemplatesPage: React.FC = () => {
             <GradientHeader>
                 <Container maxWidth="lg">
                     <Fade in timeout={1000}>
-                        <Box display="flex" alignItems="center" gap={3}>
-                            <Zoom in timeout={500}>
-                                <Avatar
-                                    sx={{
-                                        width: 80,
-                                        height: 80,
-                                        bgcolor: 'white',
-                                        color: CORPORATE_COLOR,
-                                        boxShadow: theme.shadows[4]
-                                    }}
-                                >
-                                    <QrCodeIcon sx={{ fontSize: 48 }} />
-                                </Avatar>
-                            </Zoom>
-                            <Box>
-                                <Typography variant="h3" component="h1" fontWeight="700" gutterBottom>
-                                    Plantillas QR
-                                </Typography>
-                                <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
-                                    Genera e imprime códigos QR de los productos
-                                </Typography>
+                        <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Box display="flex" alignItems="center" gap={3}>
+                                <Zoom in timeout={500}>
+                                    <Avatar
+                                        sx={{
+                                            width: 80,
+                                            height: 80,
+                                            bgcolor: 'white',
+                                            color: CORPORATE_COLOR,
+                                            boxShadow: theme.shadows[4]
+                                        }}
+                                    >
+                                        <QrCodeIcon sx={{ fontSize: 48 }} />
+                                    </Avatar>
+                                </Zoom>
+                                <Box>
+                                    <Typography variant="h3" component="h1" fontWeight="700" gutterBottom>
+                                        Plantillas QR Múltiples
+                                    </Typography>
+                                    <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
+                                        Genera códigos QR de múltiples productos en una misma hoja
+                                    </Typography>
+                                </Box>
                             </Box>
+                            <Button
+                                variant="outlined"
+                                startIcon={<RefreshIcon />}
+                                onClick={handleRefresh}
+                                disabled={refreshing || loading}
+                                sx={{
+                                    color: 'white',
+                                    borderColor: 'rgba(255,255,255,0.3)',
+                                    '&:hover': {
+                                        borderColor: 'white',
+                                        bgcolor: 'rgba(255,255,255,0.1)'
+                                    }
+                                }}
+                            >
+                                {refreshing ? 'Actualizando...' : 'Actualizar'}
+                            </Button>
                         </Box>
                     </Fade>
                 </Container>
             </GradientHeader>
 
             <Container maxWidth="lg" sx={{ pb: 6 }}>
-                {/* Panel de estadísticas con colores corporativos */}
+                {/* Panel de estadísticas */}
                 <Grid container spacing={3} sx={{ mb: 4 }}>
                     <Grid size={{xs:12, md:4}}>
                         <StatsCard>
@@ -253,10 +323,10 @@ const QRTemplatesPage: React.FC = () => {
                                 </Avatar>
                                 <Box>
                                     <Typography variant="body2" color="text.secondary">
-                                        Hojas por lote
+                                        Hojas necesarias
                                     </Typography>
                                     <Typography variant="h5" fontWeight="bold" sx={{ color: '#4caf50' }}>
-                                        {selectedProduct ? calcularHojasNecesarias() : '0'}
+                                        {productosSeleccionados.length > 0 ? calcularHojasNecesarias() : '0'}
                                     </Typography>
                                 </Box>
                             </CardContent>
@@ -264,10 +334,10 @@ const QRTemplatesPage: React.FC = () => {
                     </Grid>
                 </Grid>
 
-                {/* Panel de configuración */}
+                {/* Panel de selección de productos */}
                 <StyledPaper sx={{ mb: 4 }}>
                     <Typography variant="h5" fontWeight="600" gutterBottom sx={{ mb: 3, color: CORPORATE_COLOR }}>
-                        Configuración de la plantilla
+                        Agregar productos a la plantilla
                     </Typography>
                     
                     <Grid container spacing={3}>
@@ -323,24 +393,19 @@ const QRTemplatesPage: React.FC = () => {
                                     }
                                 }}
                             />
-                            {!selectedProduct && error && (
-                                <FormHelperText error sx={{ mt: 1 }}>
-                                    {error}
-                                </FormHelperText>
-                            )}
                         </Grid>
 
                         <Grid size={{xs:12, md:3}}>
                             <TextField
                                 fullWidth
-                                label="Cantidad de códigos"
+                                label="Cantidad"
                                 type="number"
-                                value={cantidad}
-                                onChange={handleCantidadChange}
+                                value={cantidadProducto}
+                                onChange={handleCantidadProductoChange}
                                 InputProps={{
-                                    inputProps: { min: 1, max: 1000 }
+                                    inputProps: { min: 1, max: 100 }
                                 }}
-                                helperText={`Máximo 1000 códigos (${Math.ceil(1000 / QRS_PER_PAGE)} hojas)`}
+                                helperText="Máx 100 por producto"
                                 variant="outlined"
                             />
                         </Grid>
@@ -350,8 +415,123 @@ const QRTemplatesPage: React.FC = () => {
                                 fullWidth
                                 variant="contained"
                                 size="large"
+                                onClick={handleAgregarProducto}
+                                disabled={!selectedProduct}
+                                startIcon={<AddIcon />}
+                                sx={{
+                                    height: '56px',
+                                    bgcolor: CORPORATE_COLOR,
+                                    '&:hover': {
+                                        bgcolor: '#1a1a1a',
+                                    }
+                                }}
+                            >
+                                Agregar a la lista
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </StyledPaper>
+
+                {/* Lista de productos seleccionados */}
+                {productosSeleccionados.length > 0 && (
+                    <Fade in timeout={500}>
+                        <Paper sx={{ borderRadius: 2, overflow: 'hidden', mb: 4 }}>
+                            <Box sx={{ p: 3, bgcolor: alpha(CORPORATE_COLOR, 0.04), borderBottom: `1px solid ${alpha(CORPORATE_COLOR, 0.1)}` }}>
+                                <Typography variant="h6" fontWeight="bold" sx={{ color: CORPORATE_COLOR }}>
+                                    Productos seleccionados
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Total: {calcularTotalCodigos()} códigos • {productosSeleccionados.length} productos
+                                </Typography>
+                            </Box>
+                            <TableContainer>
+                                <Table>
+                                    <TableHead sx={{ bgcolor: alpha(CORPORATE_COLOR, 0.05) }}>
+                                        <TableRow>
+                                            <TableCell>Producto</TableCell>
+                                            <TableCell align="center">Código QR</TableCell>
+                                            <TableCell align="center">Cantidad</TableCell>
+                                            <TableCell align="right">Acciones</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {productosSeleccionados.map((producto) => (
+                                            <TableRow key={producto.id_producto}>
+                                                <TableCell>
+                                                    <Typography variant="body2" fontWeight="500">
+                                                        {producto.nombre}
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell align="center">
+                                                    <Chip
+                                                        label={producto.codigo_qr}
+                                                        size="small"
+                                                        sx={{ bgcolor: alpha(CORPORATE_COLOR, 0.1), fontFamily: 'monospace' }}
+                                                    />
+                                                </TableCell>
+                                                <TableCell align="center">
+                                                    <TextField
+                                                        type="number"
+                                                        value={producto.cantidad}
+                                                        onChange={(e) => handleActualizarCantidad(
+                                                            producto.id_producto,
+                                                            parseInt(e.target.value) || 1
+                                                        )}
+                                                        size="small"
+                                                        InputProps={{
+                                                            inputProps: { min: 1, max: 100, style: { textAlign: 'center' } }
+                                                        }}
+                                                        sx={{ width: 80 }}
+                                                    />
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    <Tooltip title="Eliminar">
+                                                        <IconButton
+                                                            onClick={() => handleEliminarProducto(producto.id_producto)}
+                                                            size="small"
+                                                            sx={{ color: '#d32f2f' }}
+                                                        >
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Paper>
+                    </Fade>
+                )}
+
+                {/* Panel de generación */}
+                <Paper sx={{ p: 4, borderRadius: 2, bgcolor: 'white' }}>
+                    <Grid container spacing={3} alignItems="center">
+                        <Grid size={{xs:12, md:8}}>
+                            <Box display="flex" alignItems="center" gap={2}>
+                                <Avatar sx={{ bgcolor: alpha(CORPORATE_COLOR, 0.1), color: CORPORATE_COLOR }}>
+                                    <PictureAsPdfIcon />
+                                </Avatar>
+                                <Box>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Resumen de impresión
+                                    </Typography>
+                                    <Typography variant="h6" fontWeight="bold">
+                                        {calcularTotalCodigos()} códigos • {calcularHojasNecesarias()} hojas tamaño carta
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                        {productosSeleccionados.length} productos diferentes • {QRS_PER_PAGE} códigos por hoja
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Grid>
+                        <Grid size={{xs:12, md:4}}>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                size="large"
                                 onClick={handleGenerate}
-                                disabled={loading || !selectedProduct}
+                                disabled={productosSeleccionados.length === 0}
                                 startIcon={<PrintIcon />}
                                 sx={{
                                     height: '56px',
@@ -365,134 +545,7 @@ const QRTemplatesPage: React.FC = () => {
                             </Button>
                         </Grid>
                     </Grid>
-
-                    {/* Información adicional */}
-                    {selectedProduct && (
-                        <Fade in timeout={500}>
-                            <Box sx={{
-                                mt: 4,
-                                p: 3,
-                                bgcolor: alpha(CORPORATE_COLOR, 0.04),
-                                borderRadius: 2,
-                                border: `1px solid ${alpha(CORPORATE_COLOR, 0.1)}`
-                            }}>
-                                <Grid container spacing={3}>
-                                    <Grid size={{xs:12, md:6}}>
-                                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                                            Producto seleccionado
-                                        </Typography>
-                                        <Box display="flex" alignItems="center" gap={2}>
-                                            <Avatar sx={{ bgcolor: CORPORATE_COLOR, width: 40, height: 40 }}>
-                                                <QrCodeIcon sx={{ fontSize: 20 }} />
-                                            </Avatar>
-                                            <Box>
-                                                <Typography variant="h6" fontWeight="600" sx={{ color: CORPORATE_COLOR }}>
-                                                    {selectedProduct.nombre}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Código QR: {selectedProduct.codigo_qr}
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Grid>
-                                    <Grid size={{xs:12, md:6}}>
-                                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                                            Resumen de impresión
-                                        </Typography>
-                                        <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
-                                            <Box>
-                                                <Typography variant="h5" fontWeight="bold" sx={{ color: CORPORATE_COLOR }}>
-                                                    {cantidad}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Códigos totales
-                                                </Typography>
-                                            </Box>
-                                            <Divider orientation="vertical" flexItem sx={{ borderColor: alpha(CORPORATE_COLOR, 0.2) }} />
-                                            <Box>
-                                                <Typography variant="h5" fontWeight="bold" sx={{ color: CORPORATE_COLOR }}>
-                                                    {calcularHojasNecesarias()}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Hojas tamaño carta
-                                                </Typography>
-                                            </Box>
-                                            <Divider orientation="vertical" flexItem sx={{ borderColor: alpha(CORPORATE_COLOR, 0.2) }} />
-                                            <Box>
-                                                <Typography variant="h5" fontWeight="bold" sx={{ color: CORPORATE_COLOR }}>
-                                                    {QRS_PER_PAGE}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Códigos por hoja
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                        </Fade>
-                    )}
-                </StyledPaper>
-
-                {/* Vista previa */}
-                {selectedProduct && (
-                    <Fade in timeout={500}>
-                        <Card sx={{ borderRadius: 3, overflow: 'hidden' }}>
-                            <Box sx={{ bgcolor: CORPORATE_COLOR, px: 3, py: 2 }}>
-                                <Typography variant="h6" color="white" fontWeight="600">
-                                    Vista previa del código QR
-                                </Typography>
-                            </Box>
-                            <CardContent sx={{ p: 4 }}>
-                                <Grid container spacing={4} alignItems="center">
-                                    <Grid size={{xs:12, md:4}}>
-                                        <QRPreviewBox>
-                                            <QRCodeCanvas
-                                                value={selectedProduct.codigo_qr}
-                                                size={160}
-                                                level="H"
-                                                includeMargin={false}
-                                                bgColor="#ffffff"
-                                                fgColor={CORPORATE_COLOR}
-                                            />
-                                        </QRPreviewBox>
-                                    </Grid>
-                                    <Grid size={{xs:12, md:8}}>
-                                        <Typography variant="body1" paragraph sx={{ fontWeight: 500 }}>
-                                            Características del código QR:
-                                        </Typography>
-                                        <Grid container spacing={2}>
-                                            <Grid size={{xs:6}}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: CORPORATE_COLOR }} />
-                                                    <Typography variant="body2">Tamaño exacto: 3cm x 3cm</Typography>
-                                                </Box>
-                                            </Grid>
-                                            <Grid size={{xs:6}}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: CORPORATE_COLOR }} />
-                                                    <Typography variant="body2">Nombre del producto incluido</Typography>
-                                                </Box>
-                                            </Grid>
-                                            <Grid size={{xs:6}}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: CORPORATE_COLOR }} />
-                                                    <Typography variant="body2">Alta resolución para impresión</Typography>
-                                                </Box>
-                                            </Grid>
-                                            <Grid size={{xs:6}}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: CORPORATE_COLOR }} />
-                                                    <Typography variant="body2">Formato optimizado para hoja carta</Typography>
-                                                </Box>
-                                            </Grid>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                            </CardContent>
-                        </Card>
-                    </Fade>
-                )}
+                </Paper>
 
                 {/* Mensajes de error */}
                 {error && (
@@ -523,8 +576,8 @@ const QRTemplatesPage: React.FC = () => {
             <QRPrintDialog
                 open={printDialogOpen}
                 onClose={() => setPrintDialogOpen(false)}
-                producto={selectedProduct}
-                cantidad={cantidad}
+                productos={productosSeleccionados}
+                totalCodigos={calcularTotalCodigos()}
             />
         </Box>
     );

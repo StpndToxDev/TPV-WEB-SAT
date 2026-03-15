@@ -27,6 +27,13 @@ export interface DashboardStats {
     ingresosMes: number;
     variacionPorcentual: number;
   };
+
+  ventasPorMetodoPago: {
+    efectivo: number;
+    tarjeta: number;
+    transferencia: number;
+    total: number;
+  };
 }
 
 export interface Venta {

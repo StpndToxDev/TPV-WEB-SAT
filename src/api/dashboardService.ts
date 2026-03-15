@@ -34,13 +34,17 @@ export const dashboardService = {
             // Calcular resumen del mes actual
             const resumenVentas = calcularResumenMes(ventas);
 
+            // Calcular ventas por método de pago
+            const ventasPorMetodoPago = calcularVentasPorMetodoPago(ventas);
+
             return {
                 totalArtistas,
                 totalProductos,
                 ventasPorMes,
                 topProductos,
                 alertasStock,
-                resumenVentas
+                resumenVentas,
+                ventasPorMetodoPago
             };
         } catch (error) {
             console.error('Error al obtener stats del dashboard:', error);
@@ -53,7 +57,7 @@ export const dashboardService = {
 async function obtenerVentas(): Promise<Venta[]> {
     try {
         console.log('🔍 Obteniendo ventas desde Supabase...');
-        
+
         // CORREGIDO: Ordenar por fecha_hora de ventas, no de ventas_detalle
         const { data, error } = await supabase
             .from('ventas_detalle')
@@ -78,7 +82,7 @@ async function obtenerVentas(): Promise<Venta[]> {
         // Transformar al formato Venta esperado
         const ventas: Venta[] = data.map(item => {
             const ventaInfo = Array.isArray(item.ventas) ? item.ventas[0] : item.ventas;
-            
+
             return {
                 id_venta: item.id_venta,
                 fecha_hora: ventaInfo?.fecha_hora || new Date().toISOString(),
@@ -253,6 +257,55 @@ function calcularResumenMes(ventas: Venta[]) {
         ingresosMes,
         variacionPorcentual
     };
+}
+
+function calcularVentasPorMetodoPago(ventas: Venta[]): {
+    efectivo: number;
+    tarjeta: number;
+    transferencia: number;
+    total: number;
+} {
+    // Agrupar por id_venta para obtener ventas únicas
+    const ventasUnicas: Record<string, Venta[]> = {};
+
+    ventas.forEach(venta => {
+        if (!ventasUnicas[venta.id_venta]) {
+            ventasUnicas[venta.id_venta] = [];
+        }
+        ventasUnicas[venta.id_venta].push(venta);
+    });
+
+    // Inicializar contadores
+    const resultado = {
+        efectivo: 0,
+        tarjeta: 0,
+        transferencia: 0,
+        total: 0
+    };
+
+    // Procesar cada venta única
+    Object.values(ventasUnicas).forEach(lineasVenta => {
+        if (lineasVenta.length === 0) return;
+
+        // El método de pago está en la primera línea (todas tienen el mismo)
+        const metodoPago = lineasVenta[0].metodo_pago?.toLowerCase() || '';
+
+        // Calcular total de esta venta
+        const totalVenta = lineasVenta.reduce((sum, linea) => sum + linea.subtotal, 0);
+
+        // Sumar al método correspondiente
+        if (metodoPago === 'efectivo') {
+            resultado.efectivo += totalVenta;
+        } else if (metodoPago === 'tarjeta') {
+            resultado.tarjeta += totalVenta;
+        } else if (metodoPago === 'transferencia') {
+            resultado.transferencia += totalVenta;
+        }
+
+        resultado.total += totalVenta;
+    });
+
+    return resultado;
 }
 
 function obtenerAlertasStock(productos: Producto[], inventario: Inventario[]): any[] {

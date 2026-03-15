@@ -5,7 +5,11 @@ export interface QRProduct {
     codigo_qr: string;
 }
 
-export interface QRTemplateConfig {
-    producto: QRProduct | null;
+export interface ProductoSeleccionado extends QRProduct {
     cantidad: number;
+}
+
+export interface QRTemplateConfig {
+    productos: ProductoSeleccionado[];
+    totalCodigos: number;
 }

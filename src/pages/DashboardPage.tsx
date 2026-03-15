@@ -129,7 +129,7 @@ const DashboardPage: React.FC = () => {
     return (
       <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', py: 4 }}>
         <Container maxWidth="xl">
-          <LinearProgress sx={{ 
+          <LinearProgress sx={{
             bgcolor: alpha(CORPORATE_COLOR, 0.2),
             '& .MuiLinearProgress-bar': {
               bgcolor: CORPORATE_COLOR
@@ -144,9 +144,9 @@ const DashboardPage: React.FC = () => {
     return (
       <Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh', py: 4 }}>
         <Container maxWidth="xl">
-          <Alert 
-            severity="error" 
-            sx={{ 
+          <Alert
+            severity="error"
+            sx={{
               borderRadius: 2,
               boxShadow: theme.shadows[2]
             }}
@@ -212,7 +212,7 @@ const DashboardPage: React.FC = () => {
         {/* Fila 1: Tarjetas de resumen con diseño mejorado */}
         <Grid container spacing={3} mb={4}>
           {/* Tarjeta de Artistas */}
-          <Grid size={{xs:12, sm:6, md:3}}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <StatsCard>
               <StatsCardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -233,7 +233,7 @@ const DashboardPage: React.FC = () => {
           </Grid>
 
           {/* Tarjeta de Productos */}
-          <Grid size={{xs:12, sm:6, md:3}}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <StatsCard>
               <StatsCardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -254,7 +254,7 @@ const DashboardPage: React.FC = () => {
           </Grid>
 
           {/* Tarjeta de Ventas del Mes */}
-          <Grid size={{xs:12, sm:6, md:3}}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <StatsCard>
               <StatsCardContent>
                 <Box display="flex" flexDirection="column" height="100%">
@@ -262,10 +262,10 @@ const DashboardPage: React.FC = () => {
                     <Typography color="text.secondary" variant="body2" sx={{ fontWeight: 500 }}>
                       Ventas del mes
                     </Typography>
-                    <Chip 
+                    <Chip
                       label={`${stats.resumenVentas.totalVentasMes} ventas`}
                       size="small"
-                      sx={{ 
+                      sx={{
                         bgcolor: alpha('#4CAF50', 0.1),
                         color: '#4CAF50',
                         fontWeight: 500
@@ -286,7 +286,7 @@ const DashboardPage: React.FC = () => {
           </Grid>
 
           {/* Tarjeta de Ingresos */}
-          <Grid size={{xs:12, sm:6, md:3}}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <StatsCard>
               <StatsCardContent>
                 <Box>
@@ -294,7 +294,7 @@ const DashboardPage: React.FC = () => {
                     <Typography color="text.secondary" variant="body2" sx={{ fontWeight: 500 }}>
                       Ingresos del mes
                     </Typography>
-                    <Box display="flex" alignItems="center" sx={{ 
+                    <Box display="flex" alignItems="center" sx={{
                       bgcolor: alpha(stats.resumenVentas.variacionPorcentual >= 0 ? '#4CAF50' : '#FF6B6B', 0.1),
                       borderRadius: 2,
                       px: 1,
@@ -338,7 +338,7 @@ const DashboardPage: React.FC = () => {
         {/* Fila 2: Alertas de Stock y Top Productos */}
         <Grid container spacing={3}>
           {/* Alertas de Stock */}
-          <Grid size={{xs:12, md:6}}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <StyledPaper>
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
                 <Box display="flex" alignItems="center" gap={1}>
@@ -376,15 +376,15 @@ const DashboardPage: React.FC = () => {
                       <ListItem alignItems="flex-start" sx={{ px: 0, py: 1.5 }}>
                         <ListItemAvatar>
                           {alerta.imagen_url ? (
-                            <Avatar 
-                              src={alerta.imagen_url} 
+                            <Avatar
+                              src={alerta.imagen_url}
                               variant="rounded"
                               sx={{ width: 48, height: 48 }}
                             />
                           ) : (
-                            <Avatar 
-                              variant="rounded" 
-                              sx={{ 
+                            <Avatar
+                              variant="rounded"
+                              sx={{
                                 bgcolor: alpha(CORPORATE_COLOR, 0.1),
                                 color: CORPORATE_COLOR,
                                 width: 48,
@@ -402,14 +402,14 @@ const DashboardPage: React.FC = () => {
                                 {alerta.nombre}
                               </Typography>
                               {alerta.categoria === 'ropa' && (
-                                <Chip 
-                                  label={alerta.talla} 
-                                  size="small" 
-                                  sx={{ 
+                                <Chip
+                                  label={alerta.talla}
+                                  size="small"
+                                  sx={{
                                     bgcolor: alpha(CORPORATE_COLOR, 0.1),
                                     color: CORPORATE_COLOR,
                                     fontWeight: 500
-                                  }} 
+                                  }}
                                 />
                               )}
                             </Box>
@@ -445,7 +445,7 @@ const DashboardPage: React.FC = () => {
           </Grid>
 
           {/* Top Productos */}
-          <Grid size={{xs:12, md:6}}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <StyledPaper>
               <Box display="flex" alignItems="center" gap={1} mb={2}>
                 <TrendingUp sx={{ color: CORPORATE_COLOR }} />
@@ -515,6 +515,99 @@ const DashboardPage: React.FC = () => {
                   })}
                 </List>
               )}
+            </StyledPaper>
+          </Grid>
+        </Grid>
+        {/* Fila 3: Ventas por método de pago */}
+        <Grid container spacing={3} sx={{ mt: 3 }}>
+          <Grid size={{ xs: 12 }}>
+            <StyledPaper sx={{ maxHeight: 'none', overflow: 'visible' }}>
+              <Box display="flex" alignItems="center" gap={1} mb={3}>
+                <AttachMoney sx={{ color: CORPORATE_COLOR }} />
+                <Typography variant="h6" fontWeight="bold" sx={{ color: CORPORATE_COLOR }}>
+                  Ventas por Método de Pago
+                </Typography>
+              </Box>
+
+              <Grid container spacing={3}>
+                {/* Tarjeta Efectivo */}
+                <Grid size={{ xs: 12, sm: 4 }}>
+                  <StatsCard>
+                    <CardContent>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                          Efectivo
+                        </Typography>
+                        <Avatar sx={{ bgcolor: alpha('#4CAF50', 0.1), width: 40, height: 40 }}>
+                          <AttachMoney sx={{ color: '#4CAF50' }} />
+                        </Avatar>
+                      </Box>
+                      <Typography variant="h4" fontWeight="bold" sx={{ color: '#4CAF50', mb: 1 }}>
+                        ${stats.ventasPorMetodoPago.efectivo.toLocaleString('es-MX')}
+                      </Typography>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <Chip
+                          size="small"
+                          label={`${((stats.ventasPorMetodoPago.efectivo / stats.ventasPorMetodoPago.total) * 100).toFixed(1)}% del total`}
+                          sx={{ bgcolor: alpha('#4CAF50', 0.1), color: '#4CAF50', fontWeight: 500 }}
+                        />
+                      </Box>
+                    </CardContent>
+                  </StatsCard>
+                </Grid>
+
+                {/* Tarjeta Tarjeta */}
+                <Grid size={{ xs: 12, sm: 4 }}>
+                  <StatsCard>
+                    <CardContent>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                          Tarjeta
+                        </Typography>
+                        <Avatar sx={{ bgcolor: alpha('#2196F3', 0.1), width: 40, height: 40 }}>
+                          <AttachMoney sx={{ color: '#2196F3' }} />
+                        </Avatar>
+                      </Box>
+                      <Typography variant="h4" fontWeight="bold" sx={{ color: '#2196F3', mb: 1 }}>
+                        ${stats.ventasPorMetodoPago.tarjeta.toLocaleString('es-MX')}
+                      </Typography>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <Chip
+                          size="small"
+                          label={`${((stats.ventasPorMetodoPago.tarjeta / stats.ventasPorMetodoPago.total) * 100).toFixed(1)}% del total`}
+                          sx={{ bgcolor: alpha('#2196F3', 0.1), color: '#2196F3', fontWeight: 500 }}
+                        />
+                      </Box>
+                    </CardContent>
+                  </StatsCard>
+                </Grid>
+
+                {/* Tarjeta Transferencia */}
+                <Grid size={{ xs: 12, sm: 4 }}>
+                  <StatsCard>
+                    <CardContent>
+                      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                          Transferencia
+                        </Typography>
+                        <Avatar sx={{ bgcolor: alpha('#FF9800', 0.1), width: 40, height: 40 }}>
+                          <AttachMoney sx={{ color: '#FF9800' }} />
+                        </Avatar>
+                      </Box>
+                      <Typography variant="h4" fontWeight="bold" sx={{ color: '#FF9800', mb: 1 }}>
+                        ${stats.ventasPorMetodoPago.transferencia.toLocaleString('es-MX')}
+                      </Typography>
+                      <Box display="flex" alignItems="center" gap={1}>
+                        <Chip
+                          size="small"
+                          label={`${((stats.ventasPorMetodoPago.transferencia / stats.ventasPorMetodoPago.total) * 100).toFixed(1)}% del total`}
+                          sx={{ bgcolor: alpha('#FF9800', 0.1), color: '#FF9800', fontWeight: 500 }}
+                        />
+                      </Box>
+                    </CardContent>
+                  </StatsCard>
+                </Grid>
+              </Grid>
             </StyledPaper>
           </Grid>
         </Grid>

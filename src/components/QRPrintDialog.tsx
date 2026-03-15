@@ -8,20 +8,19 @@ import {
     Button,
     Box,
     Typography,
-    IconButton
+    IconButton,
+    Chip
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import CloseIcon from '@mui/icons-material/Close';
 import PrintIcon from '@mui/icons-material/Print';
-import { QRCodeCanvas } from 'qrcode.react';
+import type { ProductoSeleccionado } from '../types/QR.types';
 
 interface QRPrintDialogProps {
     open: boolean;
     onClose: () => void;
-    producto: {
-        nombre: string;
-        codigo_qr: string;
-    } | null;
-    cantidad: number;
+    productos: ProductoSeleccionado[];
+    totalCodigos: number;
 }
 
 // Configuración de la cuadrícula
@@ -44,12 +43,28 @@ const QRS_PER_PAGE = QRS_PER_ROW * QRS_PER_COL;
 const QRPrintDialog: React.FC<QRPrintDialogProps> = ({
     open,
     onClose,
-    producto,
-    cantidad
+    productos,
+    totalCodigos
 }) => {
-    if (!producto) return null;
+    if (productos.length === 0) return null;
 
-    const totalPages = Math.ceil(cantidad / QRS_PER_PAGE);
+    const totalPages = Math.ceil(totalCodigos / QRS_PER_PAGE);
+
+    // Generar un array plano con todos los QR a imprimir
+    const generateQRList = () => {
+        const lista: { nombre: string; codigo_qr: string }[] = [];
+        productos.forEach(producto => {
+            for (let i = 0; i < producto.cantidad; i++) {
+                lista.push({
+                    nombre: producto.nombre,
+                    codigo_qr: producto.codigo_qr
+                });
+            }
+        });
+        return lista;
+    };
+
+    const qrList = generateQRList();
 
     const handlePrint = () => {
         // Crear una nueva ventana para imprimir
@@ -64,7 +79,7 @@ const QRPrintDialog: React.FC<QRPrintDialogProps> = ({
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Plantilla QR - ${producto.nombre}</title>
+                <title>Plantilla QR Múltiple</title>
                 <style>
                     @page {
                         size: letter;
@@ -123,16 +138,17 @@ const QRPrintDialog: React.FC<QRPrintDialogProps> = ({
 
             for (let qrIndex = 0; qrIndex < QRS_PER_PAGE; qrIndex++) {
                 const globalIndex = pageIndex * QRS_PER_PAGE + qrIndex;
-                if (globalIndex >= cantidad) {
+                if (globalIndex >= totalCodigos) {
                     // Si ya no hay más QR, agregar celdas vacías para mantener la cuadrícula
                     printContent += `<div></div>`;
                     continue;
                 }
 
+                const qr = qrList[globalIndex];
                 printContent += `
                     <div class="qr-item">
-                        <img class="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(producto.codigo_qr)}" alt="QR" />
-                        <div class="product-name">${producto.nombre}</div>
+                        <img class="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qr.codigo_qr)}" alt="QR" />
+                        <div class="product-name">${qr.nombre}</div>
                     </div>
                 `;
             }
@@ -178,7 +194,7 @@ const QRPrintDialog: React.FC<QRPrintDialogProps> = ({
                 alignItems: 'center'
             }}>
                 <Typography variant="h6" fontWeight="bold">
-                    Plantilla de Códigos QR - {producto.nombre}
+                    Plantilla de Códigos QR Múltiple
                 </Typography>
                 <IconButton onClick={onClose} sx={{ color: 'white' }}>
                     <CloseIcon />
@@ -189,15 +205,27 @@ const QRPrintDialog: React.FC<QRPrintDialogProps> = ({
 
             <DialogContent sx={{ p: 3 }}>
                 <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="body2" color="text.secondary">
-                        {cantidad} códigos • {totalPages} hoja(s) tamaño carta
-                    </Typography>
+                    <Box>
+                        <Typography variant="body2" color="text.secondary">
+                            {totalCodigos} códigos • {totalPages} hoja(s) tamaño carta
+                        </Typography>
+                        <Box display="flex" gap={1} mt={1}>
+                            {productos.map((p, idx) => (
+                                <Chip
+                                    key={idx}
+                                    label={`${p.nombre}: ${p.cantidad}`}
+                                    size="small"
+                                    sx={{ bgcolor: alpha('#303030', 0.1) }}
+                                />
+                            ))}
+                        </Box>
+                    </Box>
                     <Typography variant="caption" color="text.secondary">
                         Cada cuadro: 3cm x 3cm
                     </Typography>
                 </Box>
 
-                {/* Vista previa en el modal (solo algunas hojas para no sobrecargar) */}
+                {/* Vista previa en el modal */}
                 <Box sx={{
                     maxHeight: '400px',
                     overflow: 'auto',
@@ -220,9 +248,9 @@ const QRPrintDialog: React.FC<QRPrintDialogProps> = ({
                             borderRadius: 1,
                             border: '1px solid #e0e0e0'
                         }}>
-                            {Array.from({ length: Math.min(QRS_PER_PAGE, cantidad) }).map((_, qrIndex) => (
+                            {qrList.slice(0, Math.min(QRS_PER_PAGE, totalCodigos)).map((qr, idx) => (
                                 <Box
-                                    key={qrIndex}
+                                    key={idx}
                                     sx={{
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -233,27 +261,24 @@ const QRPrintDialog: React.FC<QRPrintDialogProps> = ({
                                         margin: '0 auto'
                                     }}
                                 >
-                                    <QRCodeCanvas
-                                        value={producto.codigo_qr}
-                                        size={QR_SIZE_PX * 0.8}
-                                        level="H"
-                                        includeMargin={false}
-                                        bgColor="#ffffff"
-                                        fgColor="#303030"
+                                    <img
+                                        src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qr.codigo_qr)}`}
+                                        alt="QR"
+                                        style={{ width: '80%', height: '80%' }}
                                     />
                                     <Typography
                                         variant="caption"
                                         align="center"
                                         sx={{
                                             mt: 0.5,
-                                            fontSize: '0.7rem',
+                                            fontSize: '0.6rem',
                                             maxWidth: '100%',
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis',
                                             whiteSpace: 'nowrap'
                                         }}
                                     >
-                                        {producto.nombre}
+                                        {qr.nombre}
                                     </Typography>
                                 </Box>
                             ))}
