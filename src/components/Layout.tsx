@@ -29,6 +29,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import icono from '../assets/icono.png';
 import QrCodeIcon from '@mui/icons-material/QrCode';
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 
 const drawerWidth = 280;
 
@@ -47,6 +48,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+    { text: 'Punto de Venta', icon: <PointOfSaleIcon />, path: '/punto-venta' },
     { text: 'Artistas', icon: <ArtistsIcon />, path: '/artistas' },
     { text: 'Productos', icon: <ProductsIcon />, path: '/productos' },
     { text: 'Inventario', icon: <InventoryIcon />, path: '/inventario' },

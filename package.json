@@ -18,7 +18,9 @@
     "@mui/x-date-pickers": "^8.27.2",
     "@supabase/supabase-js": "^2.98.0",
     "axios": "^1.13.5",
+    "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
+    "html5-qrcode": "^2.3.8",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -29,6 +31,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

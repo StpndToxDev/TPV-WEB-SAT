@@ -10,6 +10,8 @@ import InventoryPage from './pages/InventoryPage';
 import ReportsPage from './pages/ReportsPage';
 import SalesPage from './pages/SalesPage';
 import QRTemplatesPage from './pages/QRTemplatesPage';
+import PuntoVentaPage from './pages/puntoVentaPage';
+import PagoPage from './pages/PagoPage';
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
                     <Route path="*" element={<Navigate to="/" replace />} />
                     <Route path="/ventas" element={<SalesPage />} />
                     <Route path="/qr-templates" element={<QRTemplatesPage />} />
+                    <Route path="/punto-venta" element={<PuntoVentaPage />} />
+                    <Route path="/pago" element={<PagoPage />} />
                   </Routes>
                 </Layout>
               </ProtectedRoute>

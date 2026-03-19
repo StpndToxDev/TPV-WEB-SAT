@@ -1,16 +1,20 @@
 // src/api/authService.ts
 import { supabase } from './supabaseClient';
 import type { LoginResponse, VerificarUsuarioResponse } from '../types/Auth.types';
+import CryptoJS from 'crypto-js';
 
 // Función auxiliar para hashear contraseñas (SHA-256 en Base64)
 // IMPORTANTE: Debe ser la misma implementación que en Android
 async function hashPassword(password: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashBase64 = btoa(String.fromCharCode(...hashArray));
-  return hashBase64;
+    try {
+        // Usar crypto-js para SHA-256
+        const hash = CryptoJS.SHA256(password);
+        return hash.toString(CryptoJS.enc.Base64);
+    } catch (error) {
+        console.error('Error al hashear contraseña:', error);
+        // Fallback
+        return btoa(password);
+    }
 }
 
 export const authService = {
